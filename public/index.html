@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+ <style>
+  
+* {
+    border: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    overflow: hidden;
+    background-color: hsl(223, 90%, 90%);
+    color: hsl(223, 90%, 10%);
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    text-align: center;
+    font: 1em/1.5 sans-serif;
+    height: 100vh; /* Full viewport height */
+    margin: 0; /* Ensure no margin around the body */
+    transition: background-color 0.3s cubic-bezier(0.42, 0, 0.58, 1), color 0.3s cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  #mobile-video {
+    display: none; /* Hidden by default */
+  }
+
+    /* Full-screen overlay for popup */
+    .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  /* Popup box styling */
+  .popup-box {
+    background-color: rgb(226, 209, 177);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center; /* Center text horizontally in the popup box */
+    position: relative;
+  }
+
+  /* Heading */
+  .popup-box h2 {
+    margin: 0 0 10px; /* Adds spacing below the heading */
+  }
+
+  .popup-box p {
+text-align: justify; /* Justifies text to both sides */
+margin: 0 0 20px; /* Adds spacing below the paragraph */
+line-height: 1.5; /* Improves readability */
+padding: 0 20px; /* Prevents text from touching the edges */
+}
+
+.popuplogo {
+position: absolute;
+top: 12px; /* Distance from the top of the page */
+left: 0.5px; /* Distance from the right side of the page */
+width: 50px; /* Adjust the size of your logo */
+height: auto;
+}
+
+.close-btn {
+position: absolute;
+top: 5px;
+left: 43%;
+background: none; /* Removes any background styling */
+border: none; /* Removes border */
+font-size: 28px;
+font-weight: bold;
+color: #555;
+cursor: pointer;
+padding: 5px; /* Adds clickability */
+line-height: 1;
+outline: none; /* Removes focus outline */
+box-shadow: none; /* Removes any default hover effects like the green rectangle */
+}
+
+.close-btn:hover {
+color: red; /* Only change the text color */
+background: none; /* Ensure no background appears */
+box-shadow: none; /* Ensure no box-shadow appears */
+}
+
+.close-btn:focus {
+outline: none; /* Removes focus outline on click */
+box-shadow: none; /* Ensures no shadows appear */
+}
+
+
+/* Style the video */
+.video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the video covers the entire screen */
+    z-index: -1; /* Places it behind the content */
+  }
+
+   /* Style the content */
+   .content {
+    position: relative;
+    z-index: 1; /* Ensures it appears above the video */
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 20%;
+  }
+
+  
+  header {
+          position: fixed; /* Fix the logo at the top */
+          top: 1rem;
+          /* left: 0; */
+          right: 85%;
+          /* width: 100%; /* Make the header full width */
+          /* height: 70px; Set the height of the header */ 
+          /* background-color: #f4f4f4; Background color of the header */
+          display: flex; 
+          align-items: center; /* Vertically center the logo */
+          /* padding-left: 20px; Add some padding for spacing */
+          /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); Optional shadow effect */
+      }
+
+      .logo {
+          width: 150px; /* Set the width of the logo */
+          height: auto; /* Maintain aspect ratio */
+          margin: 10px; /* Add some spacing */
+      }
+
+
+      .text{
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 1.9em;
+      }
+
+
+  .rating-box {
+    background-color: rgba(0, 0, 0, 0.5); /* Light black with 20% opacity */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 400px; /* Maximum width of the box */
+    width: 90%; /* Ensures the box takes up 90% of the screen width */
+    margin: 20px auto; /* Centers the box horizontally and adds vertical spacing */
+    border: 2px solid hsl(223, 90%, 10%); /* Border for the box */
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+  }
+
+
+
+  .rating {
+    margin: auto;
+  }
+
+  .rating__stars {
+    display: flex;
+    position: relative;
+  }
+
+  .rating__star {
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+    width: 4em;
+    height: 5em;
+  }
+
+  .rating__star-body,
+  .rating__star-body-g,
+  .rating__star-shadow {
+    animation-duration: 1.2s;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+    animation-fill-mode: forwards;
+  }
+
+  .rating__star-body {
+    fill: hsl(223, 10%, 70%);
+    transform-origin: 16px 17.45px;
+    transition: fill 0.3s cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  .rating__star-body-g {
+    animation-name: starShrink;
+    transform: scale(0.67);
+    transform-origin: 16px 31px;
+  }
+
+  .rating__star-shadow {
+    animation-name: starShadowShrink;
+    fill: hsla(223, 90%, 10%, 0.3);
+    transform: scale(0.67);
+    transform-origin: 16px 31px;
+  }
+
+  .rating--pristine .rating__star-body,
+  .rating--pristine .rating__star-body-g,
+  .rating--pristine .rating__star-shadow {
+    animation-duration: 0s;
+  }
+
+  .rating__label,
+  .rating__input {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rating__label {
+    cursor: pointer;
+    padding: 0.1875em;
+  }
+
+  .rating__label--delay1 .rating__star-body,
+  .rating__label--delay1 .rating__star-body-g {
+    animation-delay: 0.05s;
+  }
+
+  .rating__label--delay2 .rating__star-body,
+  .rating__label--delay2 .rating__star-body-g {
+    animation-delay: 0.1s;
+  }
+
+  .rating__label--delay3 .rating__star-body,
+  .rating__label--delay3 .rating__star-body-g {
+    animation-delay: 0.15s;
+  }
+
+  .rating__label--delay4 .rating__star-body,
+  .rating__label--delay4 .rating__star-body-g {
+    animation-delay: 0.2s;
+  }
+
+  .rating__input {
+    position: absolute;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .rating__input-1:hover ~ .rating__label:first-of-type .rating__star-body,
+  .rating__input-2:hover ~ .rating__label:nth-of-type(-n + 2) .rating__star-body,
+  .rating__input-3:hover ~ .rating__label:nth-of-type(-n + 3) .rating__star-body,
+  .rating__input-4:hover ~ .rating__label:nth-of-type(-n + 4) .rating__star-body,
+  .rating__input-5:hover ~ .rating__label:nth-of-type(-n + 5) .rating__star-body {
+    fill: rgb(255, 208, 0);
+  }
+
+  .rating__input-1:checked ~ .rating__label:first-of-type .rating__star-body,
+  .rating__input-2:checked ~ .rating__label:nth-of-type(-n + 2) .rating__star-body,
+  .rating__input-3:checked ~ .rating__label:nth-of-type(-n + 3) .rating__star-body,
+  .rating__input-4:checked ~ .rating__label:nth-of-type(-n + 4) .rating__star-body,
+  .rating__input-5:checked ~ .rating__label:nth-of-type(-n + 5) .rating__star-body {
+    animation-name: starSpin;
+    fill: goldenrod;
+  }
+
+  .rating__input-1:checked ~ .rating__label:first-of-type .rating__star-body-g,
+  .rating__input-2:checked ~ .rating__label:nth-of-type(-n + 2) .rating__star-body-g,
+  .rating__input-3:checked ~ .rating__label:nth-of-type(-n + 3) .rating__star-body-g,
+  .rating__input-4:checked ~ .rating__label:nth-of-type(-n + 4) .rating__star-body-g,
+  .rating__input-5:checked ~ .rating__label:nth-of-type(-n + 5) .rating__star-body-g {
+    animation-name: starJump;
+  }
+
+  .rating__input-1:checked ~ .rating__label:first-of-type .rating__star-shadow,
+  .rating__input-2:checked ~ .rating__label:nth-of-type(-n + 2) .rating__star-shadow,
+  .rating__input-3:checked ~ .rating__label:nth-of-type(-n + 3) .rating__star-shadow,
+  .rating__input-4:checked ~ .rating__label:nth-of-type(-n + 4) .rating__star-shadow,
+  .rating__input-5:checked ~ .rating__label:nth-of-type(-n + 5) .rating__star-shadow {
+    animation-name: starShadow;
+  }
+
+  .rating__input-2:checked ~ .rating__label:nth-of-type(-n + 1):hover .rating__star-body,
+  .rating__input-3:checked ~ .rating__label:nth-of-type(-n + 2):hover .rating__star-body,
+  .rating__input-4:checked ~ .rating__label:nth-of-type(-n + 3):hover .rating__star-body,
+  .rating__input-5:checked ~ .rating__label:nth-of-type(-n + 4):hover .rating__star-body {
+    fill: rgb(255, 220, 22);
+  }
+
+  .rating__sr {
+    clip: rect(1px, 1px, 1px, 1px);
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+  }
+
+  @keyframes starJump {
+    from {
+      transform: translateY(0) scale(0.67, 0.67);
+    }
+    20% {
+      transform: translateY(0) scale(0.75, 0.5);
+    }
+    40% {
+      transform: translateY(-100%) scale(1.15, 1.15);
+    }
+    60% {
+      transform: translateY(0) scale(1.1, 0.6);
+    }
+    80% {
+      transform: translateY(0) scale(0.95, 1.1);
+    }
+    to {
+      transform: translateY(0) scale(1, 1);
+    }
+  }
+
+  @keyframes starShadow {
+    from {
+      transform: scale(0.67, 1);
+    }
+    20% {
+      transform: scale(0.75, 1);
+    }
+    40% {
+      transform: scale(1.15, 1);
+    }
+    60% {
+      transform: scale(1.1, 1);
+    }
+    80% {
+      transform: scale(0.95, 1);
+    }
+    to {
+      transform: scale(1, 1);
+    }
+  }
+
+  @keyframes starShrink {
+    from {
+      animation-timing-function: ease-in;
+      transform: scale(1, 1);
+    }
+    20% {
+      animation-timing-function: ease-out;
+      transform: scale(0.6, 0.6);
+    }
+    40%, to {
+      transform: scale(0.67, 0.67);
+    }
+  }
+
+  @keyframes starSpin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(270deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  #feedbackForm {
+    background-color:  rgb(221, 211, 193);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      max-width: 400px;
+      margin: 20px auto;
+      margin-top: 19px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+    select {
+          width: 100%;
+          max-width: 400px;
+          margin: 10px 0;
+          padding: 10px;
+          border: 1px solid #ffffff;
+          border-radius: 5px;
+          
+          /* color: white; */
+      }
+
+      .language-select {
+          position: absolute;
+          top: 20px;
+          right: 20px;          
+          color: #fff;        
+          font-size: 14px;
+      }
+
+      .language-select select {
+          width: 100%;
+          background-color: #1a1a1a;
+          border: none;
+          color: #fff;
+          padding: 5px;
+          border-radius: 5px;
+          font-size: 14px;
+      }
+
+
+input[ type="date"]{
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  color: rgb(0, 0, 0);
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+  input[type="text"],
+  input[type="email"],
+  input[ type="select"],
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    color: black;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+
+  /* Styles for tablets and phones */
+  @media (min-width: 360px) and (max-width: 640px) {
+    /* Styles for Galaxy S7 or similar devices */
+  
+    body {
+      display: flex; /* Enables Flexbox on the body */
+      justify-content: center; /* Centers content horizontally */
+      align-items: center; /* Centers content vertically */
+      height: 100vh; /* Makes the body full height of the viewport */
+      margin: 0; /* Removes default margin */
+      background-color: #f4f4f4; /* Optional: Set a background color */
+    }
+
+    .logo{
+      width: 150%; /* Full width of the logo */
+      height: auto; /* Maintain aspect ratio */
+      margin: 0px; /* Add some spacing */
+    }
+
+
+    select {
+      width: 100%;
+      max-width: 400px;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+  }
+
+  
+  .language-select {
+    position: absolute;
+    top: 20px;
+    right: 20px;          
+    color: #fff;        
+    font-size: 14px;
+}
+
+.language-select select {
+    width: 100%;
+    background-color: #1a1a1a;
+    border: none;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+
+  .rating-box {
+    background-color: rgba(0, 0, 0, 0.8); /* Light black with 20% opacity */
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 11px;
+    max-width: 400px; /* Maximum width of the box */
+    width: 90%; /* Ensures the box takes up 90% of the screen width */
+    margin: 20px auto; /* Centers the box horizontally and adds vertical spacing */
+    border: 2px solid hsl(223, 90%, 10%); /* Border for the box */
+    box-sizing: border-box; /* Ensures padding and border are included in the width */    
+}
+        
+      
+  .rating {
+    margin: auto; /* This centers the rating block inside a flex container */
+    text-align: center; /* Optional: Aligns text/content inside the rating container */
+}
+      
+  .rating__stars {
+    display: flex; /* Enables Flexbox for stars layout */
+    position: relative;
+    justify-content: center; /* Centers stars horizontally */
+}
+      
+.rating__star {
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  width: 3em;
+  height: 3em;
+}
+      
+.text{
+    color: #fff;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.1em;
+  }
+
+
+#feedbackForm {
+  background-color: rgb(189, 189, 189);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 325px;
+  padding: 20px;
+  max-width: 400px;
+  margin: 20px auto;
+  margin-top: 19px;
+}
+  
+.hidden {
+  display: none;
+}}
+  
+
+
+textarea{
+  color: #1a1a1a;
+}
+
+input[ type="date"]{
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  color: rgb(0, 0, 0);
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+  input[type="text"],
+  input[type="email"],
+  input[ type="select"]
+   {
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+    color: black;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
+
+
+
+input[type="text"],
+input[type="email"],
+input[ type="select"],
+input[ type="date"],
+select {
+  max-height: 50%;
+  width: 100%;
+  padding: 7px;
+  margin: 4px 0;
+  border: 1px solid #444;
+  border-radius: 5px;
+  }
+ </style>
+</head>
+<body>
+
+
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <button class="close-btn" id="closePopup">&times;</button>
+      <!-- <img src="jbdd-logo.png" alt="Website Logo" class="popuplogo"> -->
+      <h2>Just Between Us 😉</h2>
+      <p>If you have comments or suggestions on anything from our products or customer services, please use this form to let us know. Simply fill out the required fields and click submit. Make sure you complete the contact information if you would like us to respond to your feedback or comments. Thank you </p>
+    </div>
+  </div>
+
+  <video class="video-bg" autoplay loop muted>
+    <source src="m-bg.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  
+
+  <header>
+    <img src="jbdd-logo.png" alt="Website Logo" class="logo">
+</header>
+  <div class="language-select">
+
+    <select id="language" onchange="changeLanguage()">
+        <option value="en" id="en">English</option>
+        <option value="mr" id="mr">Marathi</option>
+        <option value="hi" id="hi">Hindi</option>
+        <option value="hi-en" id="hinglish">Hinglish</option>
+    </select>
+  </div>
+
+
+
+
+  <div class="rating-box">
+    <!-- Form starts here and wraps all form elements -->
+     
+    <form id="ratingForm" class="rating" method="POST" action="https://formsubmit.co/beb536de80515d1348a46f33c74e1f4b">
+
+  <!-- Honey Pot -->
+  <input type="text" name="_honey" style="display: none;">
+                
+  <!-- Disable ReCaptcha -->
+  <input type="hidden" name="_captcha" value="false">
+
+  <input type="hidden" name="_next" value="https://testingfeeedback.web.app/">
+  
+
+
+      <div class="rating__stars">
+        <input id="rating-1" class="rating__input rating__input-1" type="radio" name="rating" value="1">
+        <input id="rating-2" class="rating__input rating__input-2" type="radio" name="rating" value="2">
+        <input id="rating-3" class="rating__input rating__input-3" type="radio" name="rating" value="3">
+        <input id="rating-4" class="rating__input rating__input-4" type="radio" name="rating" value="4">
+        <input id="rating-5" class="rating__input rating__input-5" type="radio" name="rating" value="5">
+        <label class="rating__label" for="rating-1">
+          <svg class="rating__star" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <ellipse class="rating__star-shadow" cx="16" cy="31" rx="16" ry="1" />
+            <g class="rating__star-body-g">
+              <path class="rating__star-body" d="M15.5,26.8l-8.2,4.3c-0.8,0.4-1.7-0.3-1.6-1.1l1.6-9.2c0.1-0.3-0.1-0.7-0.3-1l-6.7-6.5c-0.6-0.6-0.3-1.7,0.6-1.8l9.2-1.3c0.4-0.1,0.7-0.3,0.8-0.6L15,1.3c0.4-0.8,1.5-0.8,1.9,0l4.1,8.3c0.2,0.3,0.5,0.5,0.8,0.6l9.2,1.3c0.9,0.1,1.2,1.2,0.6,1.8L25,19.9c-0.3,0.2-0.4,0.6-0.3,1l1.6,9.2c0.2,0.9-0.8,1.5-1.6,1.1l-8.2-4.3C16.2,26.7,15.8,26.7,15.5,26.8z" />
+            </g>
+          </svg>
+        </label>
+        <label class="rating__label" for="rating-2">
+          <svg class="rating__star" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <ellipse class="rating__star-shadow" cx="16" cy="31" rx="16" ry="1" />
+            <g class="rating__star-body-g">
+              <path class="rating__star-body" d="M15.5,26.8l-8.2,4.3c-0.8,0.4-1.7-0.3-1.6-1.1l1.6-9.2c0.1-0.3-0.1-0.7-0.3-1l-6.7-6.5c-0.6-0.6-0.3-1.7,0.6-1.8l9.2-1.3c0.4-0.1,0.7-0.3,0.8-0.6L15,1.3c0.4-0.8,1.5-0.8,1.9,0l4.1,8.3c0.2,0.3,0.5,0.5,0.8,0.6l9.2,1.3c0.9,0.1,1.2,1.2,0.6,1.8L25,19.9c-0.3,0.2-0.4,0.6-0.3,1l1.6,9.2c0.2,0.9-0.8,1.5-1.6,1.1l-8.2-4.3C16.2,26.7,15.8,26.7,15.5,26.8z" />
+            </g>
+          </svg>
+        </label>
+        <label class="rating__label" for="rating-3">
+          <svg class="rating__star" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <ellipse class="rating__star-shadow" cx="16" cy="31" rx="16" ry="1" />
+            <g class="rating__star-body-g">
+              <path class="rating__star-body" d="M15.5,26.8l-8.2,4.3c-0.8,0.4-1.7-0.3-1.6-1.1l1.6-9.2c0.1-0.3-0.1-0.7-0.3-1l-6.7-6.5c-0.6-0.6-0.3-1.7,0.6-1.8l9.2-1.3c0.4-0.1,0.7-0.3,0.8-0.6L15,1.3c0.4-0.8,1.5-0.8,1.9,0l4.1,8.3c0.2,0.3,0.5,0.5,0.8,0.6l9.2,1.3c0.9,0.1,1.2,1.2,0.6,1.8L25,19.9c-0.3,0.2-0.4,0.6-0.3,1l1.6,9.2c0.2,0.9-0.8,1.5-1.6,1.1l-8.2-4.3C16.2,26.7,15.8,26.7,15.5,26.8z" />
+            </g>
+          </svg>
+        </label>
+        <label class="rating__label" for="rating-4">
+          <svg class="rating__star" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <ellipse class="rating__star-shadow" cx="16" cy="31" rx="16" ry="1" />
+            <g class="rating__star-body-g">
+              <path class="rating__star-body" d="M15.5,26.8l-8.2,4.3c-0.8,0.4-1.7-0.3-1.6-1.1l1.6-9.2c0.1-0.3-0.1-0.7-0.3-1l-6.7-6.5c-0.6-0.6-0.3-1.7,0.6-1.8l9.2-1.3c0.4-0.1,0.7-0.3,0.8-0.6L15,1.3c0.4-0.8,1.5-0.8,1.9,0l4.1,8.3c0.2,0.3,0.5,0.5,0.8,0.6l9.2,1.3c0.9,0.1,1.2,1.2,0.6,1.8L25,19.9c-0.3,0.2-0.4,0.6-0.3,1l1.6,9.2c0.2,0.9-0.8,1.5-1.6,1.1l-8.2-4.3C16.2,26.7,15.8,26.7,15.5,26.8z" />
+            </g>
+          </svg>
+        </label>
+        <label class="rating__label" for="rating-5">
+          <svg class="rating__star" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <ellipse class="rating__star-shadow" cx="16" cy="31" rx="16" ry="1" />
+            <g class="rating__star-body-g">
+              <path class="rating__star-body" d="M15.5,26.8l-8.2,4.3c-0.8,0.4-1.7-0.3-1.6-1.1l1.6-9.2c0.1-0.3-0.1-0.7-0.3-1l-6.7-6.5c-0.6-0.6-0.3-1.7,0.6-1.8l9.2-1.3c0.4-0.1,0.7-0.3,0.8-0.6L15,1.3c0.4-0.8,1.5-0.8,1.9,0l4.1,8.3c0.2,0.3,0.5,0.5,0.8,0.6l9.2,1.3c0.9,0.1,1.2,1.2,0.6,1.8L25,19.9c-0.3,0.2-0.4,0.6-0.3,1l1.6,9.2c0.2,0.9-0.8,1.5-1.6,1.1l-8.2-4.3C16.2,26.7,15.8,26.7,15.5,26.8z" />
+            </g>
+          </svg>
+        </label>
+      </div>
+
+      <div id="text" style="font-size: 0.9em;color: aliceblue;">
+        <h2>How Do You Rate Us?</h2>
+      </div>
+    
+
+
+  <!-- <div class="rating-box">
+    <form class="rating">
+      <div class="rating__stars">
+        Your star rating code remains the same
+       </div>
+    </form>
+  </div> --> 
+
+  <div class="hidden" id="feedbackForm">
+
+    <!-- <label for="name" id="nameLabel"></label>
+    <input type="text" id="name" placeholder="Your Name"> -->
+
+    <label for="name" id="nameLabel"></label>
+    <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+    <!-- <label for="email" id="emailLabel"></label>
+    <input type="email" id="email" placeholder="Your Email"> -->
+
+    <label for="contact" id="contactlabel"></label>
+    <input type="text" id="contact" name="contact" placeholder="Your Email or Phone Number" required>
+    <div class="error" id="error-message"></div>
+
+    <select type id="selectOption" name="Branch" required>
+      <option  id="Branch" disabled selected>Select a Branch</option>
+      <option  id="GrantRoad">Grant Road</option>
+      <option id="MarineLine">Marine Line</option>
+      <option id="MohammadAli">Mohammad Ali</option>
+      <option id="Mahim">Mahim</option>
+      <option id="Jogeshwari">Jogeshwari</option>
+      <option id="Chembur">Chembur</option>
+  </select>
+
+    <!-- <input type="date" id="date"> -->
+
+    <label for="date"></label>
+        <input type="date" id="date" name="date">
+        <!-- <button type="submit">Submit</button> -->
+
+    <textarea id="message" name="message" placeholder="Let us know what's in your mind? (Optional)"></textarea>
+
+    <button type="submit" id="submit">Submit Feedback</button>  
+  </div>
+</form>
+
+  <script>
+
+      // JavaScript to close the popup
+      const popup = document.getElementById("popup");
+    const closePopup = document.getElementById("closePopup");
+
+    closePopup.addEventListener("click", () => {
+      popup.style.display = "none"; // Hide the popup
+    });
+
+// document.addEventListener('contextmenu', (e) => {
+            // e.preventDefault();
+            // alert("Right-click is disabled on this page.");
+        // });
+
+
+      // Get today's date
+      const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Month starts from 0
+        const dd = String(today.getDate()).padStart(2, '0');
+
+        // Format the date as yyyy-mm-dd
+        const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+        // Set the value of the date input
+        document.getElementById('date').value = formattedDate;
+    
+    // Language strings
+    const translations = {
+      en: {
+        text:"How Do You Rate Us?",
+        namePlaceholder: "Your Name",
+        contactPlaceholder: "Your Email Or Phone Number",
+        Branch: "Select a Branch",
+        GrantRoad: "Grant Road",
+        MarineLine: "Marine Line",
+        MohammadAli: "Mohammad Ali",
+        Mahim: "Mahim",
+        Jogeshwari: "Jogeshwari",
+        Chembur: "Chembur",
+        messagePlaceholder: "Let us know what's in your mind? (Optional)",
+        submit: "Submit Feedback",
+        
+      },
+
+      mr: {
+        text:"तुम्ही आमची रेटिंग कशी कराल?",
+        namePlaceholder: "तुमचं नाव",
+        contactPlaceholder:"तुमचं ईमेल किंवा फोन नंबर प्रविष्ट करा",
+        Branch: "एक शाखा निवडा",
+        GrantRoad: "ग्रांट रोड",
+        MarineLine: "मरीन लाईन",
+        MohammadAli: "मोहमद अली",
+        Mahim: "महिम",
+        Jogeshwari: "जोळेश्वरी",
+        Chembur: "चेम्बूर",
+        messagePlaceholder: "आम्हाला सांगा की तुमच्या मनात काय आहे? (ऐच्छिक)",
+        submit: "प्रतिक्रिया सबमिट करा",
+      },
+
+      hi: {
+        text:"आप हमारी रेटिंग कैसे करेंगे?",
+        namePlaceholder: "आपका नाम",
+        contactPlaceholder:"आपका ईमेल या फ़ोन नंबर दर्ज करें",
+        Branch: "एक शाखा चुनें",
+        GrantRoad: "ग्रांट रोड",
+        MarineLine: "मरीन लाईन",
+        MohammadAli: "मोहमद अली",
+        Mahim: "महिम",
+        Jogeshwari: "जोगेश्वरी",
+        Chembur: "चेम्बूर",
+        messagePlaceholder: "हमें बताएं कि आपके मन में क्या है? (वैकल्पिक)",
+        submit: "प्रतिक्रिया भेजें",
+      },
+
+
+      "hi-en": {
+        text:"Aap humari rating kaise karenge?",
+        namePlaceholder: "Aapka Naam",
+        contactPlaceholder:"Aapka Email ya Phone Number Daliye",
+        Branch: "Ek Shakha Chune",
+        GrantRoad: "Grant Road",
+        MarineLine: "Marine Line",
+        MohammadAli: "Mohammad Ali",
+        Mahim: "Mahim",
+        Jogeshwari: "Jogeshwari",
+        Chembur: "Chembur",
+        messagePlaceholder: "Humein batao ki aapke mann mein kya hai? (Optional)",
+        submit: "Feedback Submit Kijiye",
+      }
+    };
+
+    function changeLanguage() {
+      const language = document.getElementById("language").value;
+      // document.getElementById("nameLabel").innerText = translations[language].nameLabel;
+      // document.getElementById("emailLabel").innerText = translations[language].emailLabel;
+      // document.getElementById("language").innerText = translations [language].language,
+      // document.getElementById("").placeholder = translations[language].mr;
+      // document.getElementById("mr").placeholder = translations[language].mr;
+      // document.getElementById("hi").placeholder = translations[language].hi;
+      // document.getElementById("hi-en").placeholder = translations[language].hi-en;
+      document.getElementById("text").innerText = translations[language].text,
+      document.getElementById("name").placeholder = translations[language].namePlaceholder;
+      // document.getElementById("email").placeholder = translations[language].emailPlaceholder;
+      document.getElementById("contact").placeholder = translations[language].contactPlaceholder;
+      document.getElementById("selectOption").placeholder = translations[language].selectOption;
+      document.getElementById("Branch").innerHTML = translations[language].Branch,
+      document.getElementById("GrantRoad").innerHTML = translations[language].GrantRoad,
+      document.getElementById("MarineLine").innerHTML = translations[language].MarineLine,
+      document.getElementById("MohammadAli").innerHTML = translations[language].MohammadAli,
+      document.getElementById("Mahim").innerHTML = translations[language].Mahim,
+      document.getElementById("Jogeshwari").innerHTML = translations[language].Jogeshwari,
+      document.getElementById("Chembur").innerHTML = translations[language].Chembur,
+      document.getElementById("message").placeholder = translations[language].messagePlaceholder;
+      document.getElementById("submit").innerText = translations[language].submit;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const ratingInputs = document.querySelectorAll('.rating__input');
+      const feedbackForm = document.getElementById('feedbackForm');
+      const selectedRatingInput = document.getElementById('selectedRating');
+
+      ratingInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          feedbackForm.classList.remove('hidden');
+          selectedRatingInput.value = input.value;
+        });
+      });
+    });
+
+    function submitFeedback() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      const selectedRating = document.getElementById('selectedRating').value;
+
+      if (name && email && message && selectedRating) {
+        alert(`Thank you for your feedback! Rating: ${selectedRating}`);
+      } else {
+        alert('Please fill out all fields.');
+      }
+    }
+
+        // Enable submit button if there's text in the textarea
+        $('.feedback textarea').on('input', function () {
+                const submitButton = $(this).closest('form').find('button[type="submit"]');
+                submitButton.prop('disabled', !$(this).val().length);
+            });
+
+
+        // Enable submit button if all form fields are filled
+
+        function submitForm() {
+            const selectedEmoji = $('#selectedEmoji').val();
+            const message = $('textarea[name="message"]').val();
+            const name = $('input[name="name"]').val();
+            const email = $('input[name="email"]').val();
+
+            // Prepare the WhatsApp message
+            const whatsappMessage = `*Feedback from:* ${name}\n*Email:* ${email}\n*Rating:* ${selectedEmoji}\n*Message:* ${message}`;
+            
+            // Encode the message for the WhatsApp URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+
+            // Open WhatsApp with the message
+            const whatsappUrl = `https://wa.me/919967795559?text=${encodedMessage}`; // Replace with your WhatsApp number
+            window.location.href = whatsappUrl;
+
+            // Optionally, you can also submit the form to your email service
+            // $('#feedbackForm').submit();
+        }
+	
+  </script>
+
+</body>
+</html>
